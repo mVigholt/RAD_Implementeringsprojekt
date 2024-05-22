@@ -1,8 +1,8 @@
 import random
 from typing import Generator, Tuple
 
-def create_stream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
-    # We generate a random uint64 number.
+
+def CreateStream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
     a = 0
     b = bytearray(8)
     rnd = random.Random()
@@ -10,7 +10,6 @@ def create_stream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
     for i in range(8):
         a = (a << 8) + b[i]
     
-    # We demand that our random number has 30 zeros on the least significant bits and then a one.
     a = (a | ((1 << 31) - 1)) ^ ((1 << 30) - 1)
     x = 0
     
