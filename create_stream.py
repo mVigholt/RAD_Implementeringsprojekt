@@ -2,11 +2,11 @@ import random
 from typing import Generator, Tuple
 
 
-def CreateStream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
+def CreateStream(n, l) -> Generator[Tuple[bytes, bytes], None, None]:
     a = 0
     b = bytearray(8)
     rnd = random.Random()
-    rnd.getrandbits(8 * 8).to_bytes(8, 'big')
+    rnd.getrandbits(8 * 8).to_bytes(8, 'big') 
     for i in range(8):
         a = (a << 8) + b[i]
     
