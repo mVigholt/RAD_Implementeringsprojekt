@@ -1,4 +1,6 @@
 from ctypes import *
+import numpy as np
+from create_stream import CreateStream
 
 b = 89 # (89 / 8) = 12 bytes
 m = 2**64 #k = m = 2t
@@ -32,9 +34,6 @@ def sign_and_hash(k, b, A, x):
     return (s,h)
 
 #Opgave 6
-
-import numpy as np
-from create_stream import CreateStream
 class CountSketch:
     def __init__(self, t, b, A):
         self.t = t
@@ -63,3 +62,17 @@ for x, s in stream:
 # Estimate the sum of squared counts
 estimate = count_sketch.estimate()
 print("Estimate:", estimate)
+
+#Opgave 7 
+#make 100 random hashfunktion input:
+file = open('RandomHex.txt','r') ##4800 byte in hex from https://www.random.org/bytes/
+content = file.read().split()
+AA = []
+for i in range(0,len(content),12*4):
+    A = []
+    for j in range(0,12*4,12):
+        hex_string = ""
+        for k in range(12):
+            hex_string += content[i+j+k]
+        A.append(int(hex_string, 16))
+    AA.append(A)
