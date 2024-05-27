@@ -12,11 +12,11 @@ A = [a0,a1,a2,a3]
 def q_universal_hash(b, A, x):
     p = (2**b)-1 #0x01FFFFFFFFFFFFFFFFFFFFFF
     q = len(A)
-    a = list(map(lambda x: p&x, A))
+    a = list(map(lambda x: p&x, A)) # this ensures each coefficient is within the range [0,p−1]
 
     y = a[q-1] 
-    for i in range(q-2, -1, -1): 
-        y = y*x + a[i]  
+    for i in range(q-2, -1, -1): # starts with the highest degree coefficient
+        y = y*x + a[i] # multiplies by x and adds the next coefficient
         y = (y&p) + (y>>b)  
     if (y >= p):  
         y = y-p 
@@ -30,3 +30,36 @@ def sign_and_hash(k, b, A, x):
     b = g >> (b - 1)
     s = 1 - (2*b)
     return (s,h)
+
+#Opgave 6
+
+import numpy as np
+from create_stream import CreateStream
+class CountSketch:
+    def __init__(self, t, b, A):
+        self.t = t
+        self.b = b
+        self.A = A
+        self.m = 2**t
+        self.table = np.zeros(self.m, dtype=int) # Initialize a table with m zeros
+    
+    def update(self, x, s):
+        s, h = sign_and_hash(self.m, self.b, self.A, x)
+        self.table[h] += s # Update the table at position h by adding s
+    
+    def estimate(self):
+        return np.sum(self.table**2) # Estimate by summing squares of the table entries
+
+# Example
+t = 16  # Example t value (log2(m))
+count_sketch = CountSketch(t, b, A)
+
+# Generate stream and update sketch
+stream = CreateStream(10000, 16)
+
+for x, s in stream:
+    count_sketch.update(x, s)
+
+# Estimate the sum of squared counts
+estimate = count_sketch.estimate()
+print("Estimate:", estimate)
