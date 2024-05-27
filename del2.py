@@ -41,14 +41,14 @@ class CountSketch:
         self.b = b
         self.A = A
         self.m = 2**t
-        self.table = np.zeros(self.m, dtype=int)
+        self.table = np.zeros(self.m, dtype=int) # Initialize a table with m zeros
     
     def update(self, x, s):
         s, h = sign_and_hash(self.m, self.b, self.A, x)
-        self.table[h] += s
+        self.table[h] += s # Update the table at position h by adding s
     
     def estimate(self):
-        return np.sum(self.table**2)
+        return np.sum(self.table**2) # Estimate by summing squares of the table entries
 
 # Example
 t = 16  # Example t value (log2(m))
