@@ -1,5 +1,5 @@
-from ctypes import *
 import numpy as np
+import matplotlib.pyplot as plt
 from create_stream import CreateStream
 
 b = 89 # (89 / 8) = 12 bytes
@@ -50,19 +50,20 @@ class CountSketch:
     def estimate(self):
         return np.sum(self.table**2) # Estimate by summing squares of the table entries
 
-# Example
-t = 16  # Example t value (log2(m))
-count_sketch = CountSketch(t, b, A)
+def CountSketchTest():
+    # Example
+    t = 16  # Example t value (log2(m))
+    count_sketch = CountSketch(t, b, A)
 
-# Generate stream and update sketch
-stream = CreateStream(10000, 16)
+    # Generate stream and update sketch
+    stream = CreateStream(10000, 16)
 
-for x, s in stream:
-    count_sketch.update(x, s)
+    for x, s in stream:
+        count_sketch.update(x, s)
 
-# Estimate the sum of squared counts
-estimate = count_sketch.estimate()
-print("Estimate:", estimate)
+    # Estimate the sum of squared counts
+    estimate = count_sketch.estimate()
+    print("Estimate:", estimate)
 
 #Opgave 7 
 def hashing_parameters():
@@ -79,3 +80,18 @@ def hashing_parameters():
             A.append(int(hex_string, 16))
         AA.append(A)
     return AA
+
+def plot():
+    AA = hashing_parameters()
+    y = []
+    for i in range(0,len(AA),1):
+        stream = CreateStream(10000, 16)
+        count_sketch = CountSketch(16, b, AA[i])
+        for x, s in stream:
+            count_sketch.update(x, s)
+        y.append(count_sketch.estimate())
+    y.sort(key=lambda x: x, reverse=False)
+    plt.plot(y, '.')
+    plt.show()
+    
+plot()

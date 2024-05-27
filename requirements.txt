@@ -1,2 +1,3 @@
 #blabla==x.x.x
 numpy
+matplotlib
