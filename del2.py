@@ -83,15 +83,28 @@ def hashing_parameters():
 
 def plot():
     AA = hashing_parameters()
-    y = []
+    X = []
     for i in range(0,len(AA),1):
         stream = CreateStream(10000, 16)
         count_sketch = CountSketch(16, b, AA[i])
         for x, s in stream:
             count_sketch.update(x, s)
-        y.append(count_sketch.estimate())
-    y.sort(key=lambda x: x, reverse=False)
-    plt.plot(y, '.')
-    plt.show()
-    
+        X.append(count_sketch.estimate())
+    Xx = list(range(1,101))
+    Xy = sorted(X, key=lambda x: x, reverse=False)
+    plt.plot(Xx, Xy, '.')
+
+    M = []
+    for i in range(0,99,11):
+        G = []
+        for j in range(0,11):
+            G.append(X[i+j])
+        G.sort(key=lambda x: x, reverse=False)
+        M.append(G[5])
+    Mx = list(range(6,100,11))
+    My = sorted(M, key=lambda x: x, reverse=False)
+    plt.plot(Mx, My, '.')
+
+    plt.show()        
+            
 plot()
