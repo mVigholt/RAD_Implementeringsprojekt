@@ -2,7 +2,8 @@ import time
 import random
 
 def S(U):
-    return sum([ x**2 for x in U ])
+    L = range(len(U))
+    return sum([ x**2 for x in L ])
 
 def gen_nbit_rand(n):
     return random.getrandbits(n)
@@ -89,7 +90,6 @@ class HashTable(object):
                 return
         raise KeyError(key)
 
-    # Not completely correct?????
     def increment(self, key, d):
         for i, (k, v) in enumerate(self.table[self.h(key)]):
             if k == key:
@@ -132,12 +132,49 @@ if __name__ == "__main__":
     print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
     print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
-    t = HashTable(l, Hash.mulmodprime(a2, b, p, l))
-    t_test_key = random.randint(0,100)
+    # t = HashTable(l, Hash.mulmodprime(a2, b, p, l))
+    # t_test_key = random.randint(0,100)
 
-    t[t_test_key] = random.randint(0,100)
+    # t[t_test_key] = random.randint(0,100)
     
 
-    print("T initial value", t[t_test_key])
-    t.increment(t_test_key, 1)
-    print("T increment", t[t_test_key])
+    # print("T initial value", t[t_test_key])
+    # t.increment(t_test_key, 1)
+    # print("T increment", t[t_test_key])
+
+    # Opgave 3
+     
+    new_l = 64
+    while True:
+        try:
+            t = HashTable(new_l, Hash.mulmodprime(a2, b, p, l))
+        except MemoryError:
+            print("MemError L: ", new_l)
+            new_l -= 1
+            continue
+        except OverflowError:
+            print("OverflowError L: ", new_l)
+            new_l -= 1
+            continue
+        break
+    print("Found L", new_l)
+
+    #_S = S(test_stream)
+
+    #new_l = 1
+    #new_n = 10**3 
+
+    #while True:
+    #    try:
+    #        test_stream = create_stream.CreateStream(n, l)
+    #        t = hashtable(l, hash.mulmodprime(a2, b, p, l))
+    #        for i in test_stream:
+    #            t[i[0]] = i[1]
+    #        new_n *= 2
+    #        if 2**l >= new_n:
+    #            break
+    #    except MemoryError:
+    #        break
+    #    new_l += 1
+
+    # print("RESULT L", new_l, "N:", new_n)
