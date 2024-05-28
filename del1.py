@@ -1,6 +1,9 @@
 import time
 import random
 
+def S(U):
+    return sum([ x**2 for x in U ])
+
 def gen_nbit_rand(n):
     return random.getrandbits(n)
 
@@ -34,27 +37,65 @@ class Hash(object):
             # return ((a * x + b) % p) % 2**l 
         return H
 
+# class HashTable(object):
+#     def __init__(self, l, h=Hash.mulmodprime) -> None:
+#         self.h = h 
+#         self.size = 2**l 
+#         self.table = [None] * self.size
+# 
+#     def __getitem__(self, key):
+#         return self.table[self.h(key)]
+# 
+#     def __setitem__(self, key, value):
+#        self.table[self.h(key)] = value
+# 
+#     def __len__(self):
+#         return self.size
+#     
+#     def __delitem__(self, key):
+#         self.table[self.h(key)] = None
+# 
+#     def increment(self, key, d):
+#         item = self.table[self.h(key)]
+#         self.table[self.h(key)] = item + d if item else d
+
 class HashTable(object):
     def __init__(self, l, h=Hash.mulmodprime) -> None:
-        self.h = h 
-        self.size = 2**l 
-        self.table = [None] * self.size
+        self.h = h
+        self.size = 2**l
+        self.table = [[]] * self.size
 
     def __getitem__(self, key):
-        return self.table[self.h(key)]
+        for k, v in self.table[self.h(key)]:
+            if k == key:
+                return v
+        raise KeyError(key)
 
     def __setitem__(self, key, value):
-       self.table[self.h(key)] = value
+        for i, (k, _) in enumerate(self.table[self.h(key)]):
+            if k == key:
+                self.table[self.h(key)][i] = (key, value)
+                return
+        self.table[self.h(key)].append((key, value))
 
     def __len__(self):
-        return self.size
-    
-    def __delitem__(self, key):
-        self.table[self.h(key)] = None
+        return sum(len(bucket) for bucket in self.table)
 
+    def __delitem__(self, key):
+        bucket = self.table[self.h(key)]
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                del bucket[i]
+                return
+        raise KeyError(key)
+
+    # Not completely correct?????
     def increment(self, key, d):
-        item = self.table[self.h(key)]
-        self.table[self.h(key)] = item + d if item else d
+        for i, (k, v) in enumerate(self.table[self.h(key)]):
+            if k == key:
+                self.table[self.h(key)][i] = (k, v + d)
+                return
+        self.table[self.h(key)].append((key, d))
 
 if __name__ == "__main__":
     import create_stream
