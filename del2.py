@@ -66,9 +66,9 @@ def CountSketchTest():
     print("Estimate:", estimate)
 
 #Opgave 7 
-def hashing_parameters():
+def hashing_parameters(path):
     #Generate parameters for 100 random 4-universal hashfunctions:
-    file = open('RandomHex.txt','r') ##4800 byte in hex from https://www.random.org/bytes/
+    file = open(path,'r') ##4800 byte in hex from https://www.random.org/bytes/
     content = file.read().split()
     AA = []
     for i in range(0,len(content),12*4):
@@ -81,12 +81,12 @@ def hashing_parameters():
         AA.append(A)
     return AA
 
-def plot():
-    AA = hashing_parameters()
+def plot(n, l, t, b, S, path):
+    AA = hashing_parameters(path)
     X = []
     for i in range(0,len(AA),1):
-        stream = CreateStream(10000, 16)
-        count_sketch = CountSketch(16, b, AA[i])
+        stream = CreateStream(n, l)
+        count_sketch = CountSketch(t, b, AA[i])
         for x, s in stream:
             count_sketch.update(x, s)
         X.append(count_sketch.estimate())
@@ -104,7 +104,9 @@ def plot():
     Mx = list(range(6,100,11))
     My = sorted(M, key=lambda x: x, reverse=False)
     plt.plot(Mx, My, '.')
+    
+    plt.plot([1,100], [S,S])
 
     plt.show()        
             
-plot()
+plot(10000, 16, 16, b, 10000, 'RandomHex.txt')
