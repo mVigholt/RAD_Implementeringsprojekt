@@ -30,15 +30,11 @@ def square_sums(stream, hash_table):
     square_sums = 0 # A counter.
 
     for x, d in stream: # Told to look for each (x_n, d_n).
-        #if x in hash_table: # Takes out one key 'x' out of the hashtable (which in our application hashes each of our x's).
         hash_table.increment(x, d) # Increment should go through the linkedlist and add the value d for each x. If x is not found it will append (x,d).
-        #else:
-            #hash_table.__setitem__(x, d) #hash_table[x] = d, this will append an x (key) with its value.
-            
     
     for _, linked_list in hash_table:
         square_sum_for_list = 0
-        #print(linked_list)
+        # print(linked_list)
         for _, current_sum in linked_list:
             square_sum_for_list += current_sum ** 2 # squares each of our current sum in the linked list.
         square_sums += square_sum_for_list # then we put this sum to our counter and return it.
@@ -92,7 +88,7 @@ class HashTable(object):
         raise KeyError(key)
 
     def __setitem__(self, key, value):
-        for i, (k, _) in enumerate(self.table[self.h(key)]):
+        for i, (k, v) in enumerate(self.table[self.h(key)]):
             if k == key:
                 self.table[self.h(key)][i] = (key, value)
                 return
@@ -128,7 +124,7 @@ if __name__ == "__main__":
 
     gen_nbit_rand(256)
 
-    l = 22
+    l = 18
     n = 2**10
     p = 2**89 - 1
     a1 = 0b0111010010101101000111010010111100001011001110100011101100001111
