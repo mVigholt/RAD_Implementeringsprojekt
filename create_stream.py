@@ -21,10 +21,3 @@ def CreateStream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
     for i in range((n + 2) // 3):
         x = x + a
         yield (x & (((1 << l) - 1) << 30), 1)
-
-# stream = CreateStream(2**10,9)
-# count = 0
-# for item in stream:
-#     count += 1
-#     print(item)
-# print(count)

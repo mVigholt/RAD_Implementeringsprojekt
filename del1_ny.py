@@ -1,9 +1,8 @@
-import numpy as np
 import time
 from create_stream import CreateStream
 q = 89
-n = 2**20
-l = 11
+l = 100
+n = 2**(l*2)
 
 #Opgave1
 #a)
@@ -45,7 +44,32 @@ def test(q, l):
         B += multiply_mod_prime(x, q, l)
     lap = time.time() - timeStart
     print("multiply_mod_prime sum: {}\ntime: {}\n".format(B, lap))
-
-test(q, l)
+#test(q, l)
 
 #Opgave2
+def hash_table():
+    A = [ [] for _ in range(2**l) ]
+    stream = CreateStream(n, l)
+
+    for x,s in stream:
+        #h = multiply_shift(x, l)
+        h = multiply_mod_prime(x, q, l)
+        add_h = True
+        for i in range(0,len(A[h])):
+            first, second = A[h][i]
+            if (first == x):
+                add_h = False
+                A[h][i] = (x, s + second)
+                exit
+        if add_h:
+            A[h].append((x,s))
+    return A
+
+#Opagve3
+def square_sum(hash_table):
+    sum = 0
+    for linked_list in hash_table:
+        for x, s in linked_list:
+            sum += s
+    return sum**2
+square_sum(hash_table())
