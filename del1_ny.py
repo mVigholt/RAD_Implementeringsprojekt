@@ -8,7 +8,7 @@ n = 2**(l*2)
 #a)
 def multiply_shift(x, l):
     a = 0xbe457450e667e943 & 0x1FFFFFFFFFFFFFFF
-    return (a * x) >> (64 -l)
+    return ((a * x)&0xFFFFFFFFFFFFFFFF) >> (64 - l)
 
 #b)
 def multiply_mod_prime(x, q, l):
