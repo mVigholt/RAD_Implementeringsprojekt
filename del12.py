@@ -1,5 +1,6 @@
 import time
 import random
+from matplotlib import test
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -109,7 +110,7 @@ class Hash(object):
     @staticmethod
     def mulshift(a: int, l: int):
         def H(x):
-            return (a * x) >> (64 -l)
+            return ((a * x)&0xFFFFFFFFFFFFFFFF) >> (64 -l)
         return H
 
     @staticmethod
@@ -150,15 +151,15 @@ class HashTable(object):
 
     Examples:
         >>> ht = HashTable(4, Hash.mulmodprime(1,2,3,4))
-        >>> ht['apple'] = 5
-        >>> ht['banana'] = 10
+        >>> ht[234234234] = 5
+        >>> ht[234098233] = 10
         >>> len(ht)
         2
-        >>> ht['apple']
+        >>> ht[234234234]
         5
-        >>> 'banana' in ht
+        >>> 234234234 in ht
         True
-        >>> del ht['banana']
+        >>> del ht[234098233]
         >>> len(ht)
         1
     """
@@ -172,7 +173,7 @@ class HashTable(object):
         """
         self.h = h
         self.size = 2**l
-        self.table = [[]] * self.size
+        self.table = [[] for i in range(self.size)]
 
     def __getitem__(self, key): 
         """
@@ -332,8 +333,9 @@ def plot(n, l, b, S, path):
 if __name__ == "__main__":
     # Biggest possible value of `l`, that we could find before freezing runtime.
     q = 89
-    l = 8
-    n = 2**5
+    l = 4
+    n = 2**l
+    m = 2**l
     p = 2**89 - 1
     a1 = 0b0111010010101101000111010010111100001011001110100011101100001111
     a2 = 0b0111010010101101000111010010111100001011001110100011101100001110 
@@ -345,6 +347,8 @@ if __name__ == "__main__":
     time_mulmodprime_hash = 0
 
     test_stream = list(CreateStream(n, l)) # Contributes to yield in Creatstream not being consumed at first usage, such that we put each of these yield-results in a list.
+
+    print(test_stream)
     
     time_mulmodprime_hash = time.time()
     for i in test_stream:
@@ -357,14 +361,13 @@ if __name__ == "__main__":
         sum_mulshift_hash += Hash.mulshift(a1, l)(i[0])
     time_taken_mulshift_hash = time.time() - time_mulshift_hash
 
-
     print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
     print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
-    test_hash_table = HashTable(l, Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
-    test_S = square_sums(test_stream, test_hash_table) # We test our squaresum function on the hashtable with correlation to our stream.
+    test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
+    #test_S = square_sums(test_stream, test_hash_table) # We test our squaresum function on the hashtable with correlation to our stream.
 
-    print("Testing square sums function:", test_S)
+    #print("Testing square sums function:", test_S)
 
     # Opgave 3
 
@@ -399,7 +402,7 @@ if __name__ == "__main__":
     print('S = {}'.format(S))       
     mse = plot(n, l, q, S, 'RandomHex.txt')
     print('Mean Square Error:', mse)
-    print('Var[X]:',2*S**2/n)
+    print('Var[X]:',2*S**2/m)
 
 
 # DONT DELETE CODE BELOW, OUTCOMMENT IT INSTEAD!!!!
