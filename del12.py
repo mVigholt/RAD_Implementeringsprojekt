@@ -1,6 +1,5 @@
 import time
 import random
-from matplotlib import test
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -278,16 +277,23 @@ def hashing_parameters(path):
         AA.append(A)
     return AA
 
-def compute_X(n, l, b, path="./RandomHex.txt"):
+def compute_X(n, l, t, b, path="./RandomHex.txt"):
+    stream = []
+    for xs in CreateStream(n, l):
+        stream.append(xs)
+
+    timeStart = time.time()
     AA = hashing_parameters(path)
     X = []
     for i in range(0,len(AA),1):
-        stream = CreateStream(n, l)
-        count_sketch = CountSketch(l, b, AA[i])
+        #stream = CreateStream(n, l)
+        count_sketch = CountSketch(t, b, AA[i])
         for x, s in stream:
             count_sketch.update(x, s)
         X.append(count_sketch.estimate())
-    return X
+    timeCount = time.time() - timeStart
+    Xe = np.mean(X)
+    return X, Xe, timeCount
 
 def plot(X, S):
     Xx = list(range(1,101))
@@ -315,8 +321,9 @@ if __name__ == "__main__":
     # Biggest possible value of `l`, that we could find before freezing runtime.
     q = 89
     l = 15
-    n = 2**l
-    m = 2**l
+    t = 15
+    n = 2**t
+    m = 2**10
     p = 2**89 - 1
     a1 = 0b0111010010101101000111010010111100001011001110100011101100001111 & ((2**64)-2)
     a2 = 0x9b0082714fe482d8b65b5e50 & p  
@@ -343,52 +350,31 @@ if __name__ == "__main__":
     print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
     print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
-    # test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
+    test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
     
-    test_hash_table = HashTable(l, Hash.mulshift(a1, l)) 
+    #test_hash_table = HashTable(l, Hash.mulshift(a1, l))
 
     #test_S = square_sums(test_stream, test_hash_table) # We test our squaresum function on the hashtable with correlation to our stream.
 
     #print("Testing square sums function:", test_S)
 
     # Opgave 3
-
-    # -----------------------
-
-    # Count sktech tests 
-
-    a0_cs = 0x478ad369f6852eac0de7ccf7
-    a1_cs = 0xd472f7b830cf473f771bf810
-    a2_cs = 0x695b4252f2c52ba0031649c4
-    a3_cs = 0xd4e0ab8bb4907f43b1ede881
-    A = [a0_cs,a1_cs,a2_cs,a3_cs]
-
-    # Example
-    # t = 16  # Example t value (log2(m))
-
-    count_sketch = CountSketch(l, q, A)
-
-    # Generate stream and update sketch
-    for x, s in test_stream:
-        count_sketch.update(x, s)
-
-    # Estimate the sum of squared counts
-    estimate = count_sketch.estimate()
-    print("Estimate:", estimate)
-
-    # -------------------
-
     S = square_sums(test_stream, test_hash_table)
     print('n = {}'.format(n))
     print('l = {}'.format(l)) 
-    print('S = {}'.format(S))       
-    print('Var[X]:',2*S**2/m)
+    print("\nExpectation:")
+    print('E[x] = S = {}'.format(S))       
+    print('Var[X] = 2*S**2/m = ',2*S**2/m)
 
-    X = compute_X(n, l, q)
+
+    X, Xe, Xtime  = compute_X(n, l, t, q)
     # Calculate mean square error
     mse = np.mean([(xi - S) ** 2 for xi in X])
 
-    print('Mean Square Error:', mse)
+    print("\nEstimation:")
+    print('time: ', Xtime)
+    print('X estimate = ',Xe)
+    print('Var[X estimate]', mse)
 
     plot(X, S)
 
