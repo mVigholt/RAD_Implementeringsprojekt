@@ -55,12 +55,14 @@ def square_sums(stream, hash_table):
     for x, d in stream: # Told to look for each (x_n, d_n).
         hash_table.increment(x, d) # Increment should go through the linkedlist and add the value d for each x. If x is not found it will append (x,d).
     
-    for _, linked_list in hash_table:
-        square_sum_for_list = 0
+    #for _, linked_list in hash_table:
+    for _, i in hash_table:
+        #    square_sum_for_list = 0
         # print(linked_list)
-        for _, current_sum in linked_list:
-            square_sum_for_list += current_sum ** 2 # squares each of our current sum in the linked list.
-        square_sums += square_sum_for_list # then we put this sum to our counter and return it.
+    #    for _, current_sum in linked_list:
+    #        square_sum_for_list += current_sum ** 2 # squares each of our current sum in the linked list.
+    #    square_sums += square_sum_for_list # then we put this sum to our counter and return it.
+        square_sums += i[1] ** 2
     return square_sums
 
 # def gen_nbit_rand(n):
@@ -204,9 +206,10 @@ class HashTable(object):
         Allows the hash table to be iterated over with standard python syntax `for i in HashTable`.
 
         Returns:
-            enumerator: Object enumerating over hash table for each hashed key, linked_list.  
+            enumerator: Object enumerating over hash table.
         """
-        return enumerate(self.table)
+        # return enumerate(self.table)
+        return enumerate([i for ll in self.table for i in ll])
     
     def __contains__(self, key):
         """
