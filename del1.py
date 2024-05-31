@@ -119,6 +119,9 @@ class HashTable(object):
         self.table[self.h(key)].append((key, d))
 
 
+
+
+
 if __name__ == "__main__":
 
 

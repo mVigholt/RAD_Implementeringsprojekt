@@ -297,7 +297,7 @@ def hashing_parameters(path):
         AA.append(A)
     return AA
 
-def plot(n, l, b, S, path):
+def compute_X(n, l, b, path="./RandomHex.txt"):
     AA = hashing_parameters(path)
     X = []
     for i in range(0,len(AA),1):
@@ -306,8 +306,12 @@ def plot(n, l, b, S, path):
         for x, s in stream:
             count_sketch.update(x, s)
         X.append(count_sketch.estimate())
+    return X
+
+def plot(X, S):
     Xx = list(range(1,101))
     Xy = sorted(X, key=lambda x: x, reverse=False)
+
     plt.plot(Xx, Xy, '.', label='X')
 
     M = []
@@ -324,16 +328,12 @@ def plot(n, l, b, S, path):
     plt.plot([1,100], [S,S], label='S')
 
     plt.legend(loc = 'upper left')
-    plt.show()    
-
-    # Calculate mean square error
-    mse = np.mean([(xi - S) ** 2 for xi in X])
-    return mse    
+    plt.show()
 
 if __name__ == "__main__":
     # Biggest possible value of `l`, that we could find before freezing runtime.
     q = 89
-    l = 4
+    l = 15
     n = 2**l
     m = 2**l
     p = 2**89 - 1
@@ -348,8 +348,6 @@ if __name__ == "__main__":
 
     test_stream = list(CreateStream(n, l)) # Contributes to yield in Creatstream not being consumed at first usage, such that we put each of these yield-results in a list.
 
-    print(test_stream)
-    
     time_mulmodprime_hash = time.time()
     for i in test_stream:
         sum_mulmodprime_hash += Hash.mulmodprime(a2, b, p, l)(i[0])
@@ -400,9 +398,15 @@ if __name__ == "__main__":
     print('n = {}'.format(n))
     print('l = {}'.format(l)) 
     print('S = {}'.format(S))       
-    mse = plot(n, l, q, S, 'RandomHex.txt')
-    print('Mean Square Error:', mse)
     print('Var[X]:',2*S**2/m)
+
+    X = compute_X(n, l, q)
+    # Calculate mean square error
+    mse = np.mean([(xi - S) ** 2 for xi in X])
+
+    print('Mean Square Error:', mse)
+
+    plot(X, S)
 
 
 # DONT DELETE CODE BELOW, OUTCOMMENT IT INSTEAD!!!!
