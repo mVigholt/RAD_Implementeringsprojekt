@@ -47,28 +47,6 @@ class CountSketch:
     def estimate(self):
         return np.sum(self.table**2) # Estimate by summing squares of the table entries
 
-def CreateStream(n: int, l: int) -> Generator[Tuple[int, int], None, None]:
-    seed = 13
-    random.seed(seed)
-    a = random.getrandbits(64)
-  
-    # We demand that our random number has 30 zeros on the least significant bits and then a one.
-    a = (a | ((1 << 31) - 1)) ^ ((1 << 30) - 1)
-    x = 0
-
-    for i in range(n // 3):
-        x = x + a
-        yield (x & (((1 << l) - 1) << 30), 1)
-    
-    for i in range((n + 1) // 3):
-        x = x + a
-        yield (x & (((1 << l) - 1) << 30), -1)
-    
-    for i in range((n + 2) // 3):
-        x = x + a
-        yield (x & (((1 << l) - 1) << 30), 1)
-
-
 def square_sums(stream, hash_table):
     # We create a HashTable object
 
@@ -337,9 +315,9 @@ if __name__ == "__main__":
     n = 2**l
     m = 2**l
     p = 2**89 - 1
-    a1 = 0b0111010010101101000111010010111100001011001110100011101100001111
-    a2 = 0b0111010010101101000111010010111100001011001110100011101100001110 
-    b = 0b1000111011010111000110101111000100001011001110001010110111101010
+    a1 = 0b0111010010101101000111010010111100001011001110100011101100001111 & ((2**64)-2)
+    a2 = 0x9b0082714fe482d8b65b5e50 & p  
+    b = 0xe9be939cd923d0df0b226526 & p
     sum_mulshift_hash = 0
     sum_mulmodprime_hash = 0
     
@@ -362,7 +340,10 @@ if __name__ == "__main__":
     print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
     print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
-    test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
+    # test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
+    
+    test_hash_table = HashTable(l, Hash.mulshift(a1, l)) 
+
     #test_S = square_sums(test_stream, test_hash_table) # We test our squaresum function on the hashtable with correlation to our stream.
 
     #print("Testing square sums function:", test_S)
@@ -373,11 +354,11 @@ if __name__ == "__main__":
 
     # Count sktech tests 
 
-    a0 = 0x478ad369f6852eac0de7ccf7
-    a1 = 0xd472f7b830cf473f771bf810
-    a2 = 0x695b4252f2c52ba0031649c4
-    a3 = 0xd4e0ab8bb4907f43b1ede881
-    A = [a0,a1,a2,a3]
+    a0_cs = 0x478ad369f6852eac0de7ccf7
+    a1_cs = 0xd472f7b830cf473f771bf810
+    a2_cs = 0x695b4252f2c52ba0031649c4
+    a3_cs = 0xd4e0ab8bb4907f43b1ede881
+    A = [a0_cs,a1_cs,a2_cs,a3_cs]
 
     # Example
     # t = 16  # Example t value (log2(m))
