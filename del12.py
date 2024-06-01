@@ -221,7 +221,13 @@ class HashTable(object):
             bool: `True` if the given key is present, otherwise `False`.
 
         """
-        return bool(self.table[self.h(key)])
+        # return bool(self.table[self.h(key)])
+        bucket = self.table[self.h(key)]
+        for _, (k, _) in enumerate(bucket):
+            if k == key:
+                return True
+        return False
+
 
     def __delitem__(self, key):
         """
@@ -321,7 +327,7 @@ if __name__ == "__main__":
     # Biggest possible value of `l`, that we could find before freezing runtime.
     q = 89
     l = 15
-    t = 15
+    t = 18
     n = 2**t
     m = 2**10
     p = 2**89 - 1
@@ -351,6 +357,7 @@ if __name__ == "__main__":
     print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
     test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
+    # test_hash_table = HashTable(l, Hash.mulshift(a1, l))
     
     #test_hash_table = HashTable(l, Hash.mulshift(a1, l))
 
@@ -359,7 +366,12 @@ if __name__ == "__main__":
     #print("Testing square sums function:", test_S)
 
     # Opgave 3
+    square_sums_timer = time.time()
     S = square_sums(test_stream, test_hash_table)
+    square_sums_timer_delta = time.time() - square_sums_timer
+
+    print("Time S", square_sums_timer_delta)
+
     print('n = {}'.format(n))
     print('l = {}'.format(l)) 
     print("\nExpectation:")
