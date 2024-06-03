@@ -48,27 +48,16 @@ class CountSketch:
 
 def square_sums(stream, hash_table):
     # We create a HashTable object
-
     square_sums = 0 # A counter.
 
     for x, d in stream: # Told to look for each (x_n, d_n).
         hash_table.increment(x, d) # Increment should go through the linkedlist and add the value d for each x. If x is not found it will append (x,d).
     
-    #for _, linked_list in hash_table:
     for _, i in hash_table:
-        #    square_sum_for_list = 0
-        # print(linked_list)
-    #    for _, current_sum in linked_list:
-    #        square_sum_for_list += current_sum ** 2 # squares each of our current sum in the linked list.
-    #    square_sums += square_sum_for_list # then we put this sum to our counter and return it.
         square_sums += i[1] ** 2
     return square_sums
 
-# def gen_nbit_rand(n):
-#     return random.getrandbits(n)
 
-# def gen_nbit_rand_odd(n):
-#     return random.getrandbits(n) | 1
 
 class Hash(object):
     """ 
@@ -99,13 +88,13 @@ class Hash(object):
         def f(x):
             y= (x & p) + (x >> q)
             if (y>=p):
-                y-=p
+                y -= p
             return y
 
         def H(x):
             y = f(x * a) + b
             if y >= p:
-                y =- p 
+                y -= p 
             return y & ((2**l) - 1)
         return H
 
@@ -326,8 +315,8 @@ def plot(X, S):
 if __name__ == "__main__":
     # Biggest possible value of `l`, that we could find before freezing runtime.
     q = 89
-    l = 15
-    t = 18
+    l = 26
+    t = 26
     n = 2**t
     m = 2**10
     p = 2**89 - 1
@@ -340,44 +329,46 @@ if __name__ == "__main__":
     time_mulshift_hash = 0
     time_mulmodprime_hash = 0
 
-    test_stream = list(CreateStream(n, l)) # Contributes to yield in Creatstream not being consumed at first usage, such that we put each of these yield-results in a list.
+    # test_stream = list(CreateStream(n, l)) # Contributes to yield in Creatstream not being consumed at first usage, such that we put each of these yield-results in a list.
 
-    time_mulmodprime_hash = time.time()
-    for i in test_stream:
-        sum_mulmodprime_hash += Hash.mulmodprime(a2, b, p, l)(i[0])
-    time_taken_mulmodprime_hash = time.time() - time_mulmodprime_hash
+    # time_mulmodprime_hash = time.time()
+    # for i in test_stream:
+    #     sum_mulmodprime_hash += Hash.mulmodprime(a2, b, p, l)(i[0])
+    # time_taken_mulmodprime_hash = time.time() - time_mulmodprime_hash
 
 
-    time_mulshift_hash = time.time()
-    for i in test_stream:
-        sum_mulshift_hash += Hash.mulshift(a1, l)(i[0])
-    time_taken_mulshift_hash = time.time() - time_mulshift_hash
+    # time_mulshift_hash = time.time()
+    # for i in test_stream:
+    #     sum_mulshift_hash += Hash.mulshift(a1, l)(i[0])
+    # time_taken_mulshift_hash = time.time() - time_mulshift_hash
 
-    print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
-    print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
+    # print(f"Time Taken mulmodprime: {time_taken_mulmodprime_hash:.7f}")
+    # print(f"Time Taken mulshift: {time_taken_mulshift_hash:.7f}")
 
-    test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element. 
-    # test_hash_table = HashTable(l, Hash.mulshift(a1, l))
-    
-    #test_hash_table = HashTable(l, Hash.mulshift(a1, l))
+    S = None 
+    for l in [16, 18, 20, 24]:
+        print("----------------------------------------")
+        print("l =", l)
+        print("----------------------------------------")
+        print("\n\n")
+        test_stream = list(CreateStream(n, l)) # Contributes to yield in Creatstream not being consumed at first usage, such that we put each of these yield-results in a list.
+        test_hash_table = HashTable(l, Hash.mulmodprime(a2, b, p, l)) #Hash.mulmodprime(a2,b,p,l)) # We initiate our hashtable which should hash each element.
+        
+        # test_hash_table = HashTable(l, Hash.mulshift(a1, l))
 
-    #test_S = square_sums(test_stream, test_hash_table) # We test our squaresum function on the hashtable with correlation to our stream.
+        # Opgave 3
+        square_sums_timer = time.time()
+        S = square_sums(test_stream, test_hash_table)
+        square_sums_timer_delta = time.time() - square_sums_timer
 
-    #print("Testing square sums function:", test_S)
+        print("Time S", square_sums_timer_delta)
 
-    # Opgave 3
-    square_sums_timer = time.time()
-    S = square_sums(test_stream, test_hash_table)
-    square_sums_timer_delta = time.time() - square_sums_timer
-
-    print("Time S", square_sums_timer_delta)
-
-    print('n = {}'.format(n))
-    print('l = {}'.format(l)) 
-    print("\nExpectation:")
-    print('E[x] = S = {}'.format(S))       
-    print('Var[X] = 2*S**2/m = ',2*S**2/m)
-
+        print('n = {}'.format(n))
+        print('l = {}'.format(l)) 
+        print("\nExpectation:")
+        print('E[x] = S = {}'.format(S))       
+        print('Var[X] = 2*S**2/m = ',2*S**2/m)
+    exit(0)
 
     X, Xe, Xtime  = compute_X(n, l, t, q)
     # Calculate mean square error
